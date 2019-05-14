@@ -1,0 +1,106 @@
+/*---------------------- 1ra. Area: Codigo de Usuario ----------------------*/
+//------------->  Importaciones y paquetes
+package olc1.examenfinal_201700343;
+import java_cup.runtime.Symbol;
+import java.util.LinkedList;
+
+//------>Codigo para el parser, variables, metodos
+parser code
+{:
+
+public Numeros raiz=new Numeros();
+
+public static LinkedList<ErrorLe> ObjErrorS=new LinkedList<ErrorLe>();
+
+//Metodo que se llama automaticamente ante algun error sintactico
+public void syntax_error(Symbol s)
+{
+
+       String lexema = s.value.toString();
+       int fila = s.right;
+       int columna = s.left;
+
+       System.out.println("¡Error Sintactico encontrado! ");
+       System.out.println("\t\tLexema: "+lexema);
+       System.out.println("\t\tFila: "+fila);
+       System.out.println("\t\tColumna: "+columna);
+       
+       ErrorLe errorsin = new ErrorLe(lexema,"Error Sintactico", fila, columna, "Caracter o simbolo no esperado");
+       ObjErrorS.add(errorsin);
+}
+
+//Metodo que se llama en el momento en que ya no es posible una recuperacion de errores
+
+public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+{
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+
+       System.out.println("¡Error Sintactico encontrado! ");
+       System.out.println("\t\tLexema: "+lexema);
+       System.out.println("\t\tFila: "+fila);
+       System.out.println("\t\tColumna: "+columna);
+       
+       ErrorLe errorsin = new ErrorLe(lexema,"Error Sintactico", fila, columna, "Caracter o simbolo no esperado");
+       ObjErrorS.add(errorsin);
+
+}
+:}
+
+//-----------> Codigo para las acciones gramaticales
+action code
+{:
+
+:}
+
+
+/*---------------------- 2da. Area: Area de declaraciones ----------------------*/
+//--------> Declaracion de terminales
+terminal String para,parc,coma,numero;
+
+//--------> Declaracion de no terminales
+non terminal A;
+non terminal String BP;
+non terminal Numeros B;
+
+//--------> Precedencia de menor a mayor
+
+
+start with A;
+/*---------------------- 3ra. Area: Reglas semanticas ----------------------*/
+A::=B:B1 {:raiz=B1;:};
+B::= para numero:a coma numero:b parc BP:c {:String[] datos=c.split(",");
+                                               int resultado=0;
+                                               int resultado2=0;
+                                               int suma=100000;
+                                               int temporal=0;
+                                               int posicion1=0;
+                                               int posicion2=0;
+                                            for(int i=0;i<datos.length;i=i+2){
+
+                                            resultado=Integer.parseInt(a)-Integer.parseInt(datos[i]);
+                                            resultado2=Integer.parseInt(b)-Integer.parseInt(datos[i+1]);
+                                            resultado=Math.abs(resultado);
+                                            resultado2=Math.abs(resultado2);
+                                            temporal=resultado+resultado2;
+                                            if(temporal<suma){
+                                            suma=temporal;
+                                            posicion1=i;
+                                            posicion2=i+1;
+                                            }
+}
+                                            Numeros num=new Numeros(Integer.parseInt(datos[posicion1]),Integer.parseInt(datos[posicion2]));
+                                             
+                                             RESULT=num;:};
+
+BP::= coma para numero:a coma numero:b parc BP:BP1 {:String cadena=""; 
+if(BP1!=null){
+                                                    cadena=BP1+","+a+","+b;
+}
+else {
+cadena=a+","+b;
+}
+                                                    RESULT=cadena;
+                                                   :}
+        |   ;

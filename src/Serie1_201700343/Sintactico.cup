@@ -1,0 +1,126 @@
+/*---------------------- 1ra. Area: Codigo de Usuario ----------------------*/
+//------------->  Importaciones y paquetes
+package Serie1_201700343;
+import java_cup.runtime.Symbol;
+import java.util.LinkedList;
+
+//------>Codigo para el parser, variables, metodos
+parser code
+{:
+public String resultado;
+
+
+public static LinkedList<ErrorLe> ObjErrorS=new LinkedList<ErrorLe>();
+
+//Metodo que se llama automaticamente ante algun error sintactico
+public void syntax_error(Symbol s)
+{
+
+       String lexema = s.value.toString();
+       int fila = s.right;
+       int columna = s.left;
+
+       System.out.println("¡Error Sintactico encontrado! ");
+       System.out.println("\t\tLexema: "+lexema);
+       System.out.println("\t\tFila: "+fila);
+       System.out.println("\t\tColumna: "+columna);
+       
+       ErrorLe errorsin = new ErrorLe(lexema,"Error Sintactico", fila, columna, "Caracter o simbolo no esperado");
+       ObjErrorS.add(errorsin);
+}
+
+//Metodo que se llama en el momento en que ya no es posible una recuperacion de errores
+
+public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+{
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+
+       System.out.println("¡Error Sintactico encontrado! ");
+       System.out.println("\t\tLexema: "+lexema);
+       System.out.println("\t\tFila: "+fila);
+       System.out.println("\t\tColumna: "+columna);
+       
+       ErrorLe errorsin = new ErrorLe(lexema,"Error Sintactico", fila, columna, "Caracter o simbolo no esperado");
+       ObjErrorS.add(errorsin);
+
+}
+:}
+
+//-----------> Codigo para las acciones gramaticales
+action code
+{:
+
+:}
+
+
+/*---------------------- 2da. Area: Area de declaraciones ----------------------*/
+//--------> Declaracion de terminales
+terminal String mas,menos,por,div,puntoyc,coma,truee,falsee;
+terminal String numero;
+terminal String cadena;
+terminal String chara;
+
+
+//--------> Declaracion de no terminales
+non terminal INICIO;
+non terminal String Inicio2,Lista,Lista2,Expresion;
+
+//--------> Precedencia de menor a mayor
+precedence left mas, menos;
+precedence left por,div;
+
+start with INICIO;
+/*---------------------- 3ra. Area: Reglas semanticas ----------------------*/
+INICIO::= Lista:b Inicio2:a{:resultado=b+a;:};
+
+Inicio2::= puntoyc Lista:a Inicio2:b{:String ope=";"+a+b;
+RESULT=ope;:}
+        |   ;
+
+Lista::= Expresion:a Lista2:b{:String ope=a+b;
+RESULT=ope;:};
+
+Lista2::= coma Expresion:a Lista2:b {:String ope=","+a+b;
+RESULT=ope;:}
+|    ;
+Expresion::= Expresion:Ex1 mas Expresion:Ex2 {:String datos="";
+if(Ex1!=null && Ex2!=null){
+datos=Ex1+Ex2+"+";
+}
+RESULT=datos;
+
+:}
+            |Expresion:Ex1 menos Expresion:Ex2 {:String datos="";
+if(Ex1!=null && Ex2!=null){
+datos=Ex1+Ex2+"-";
+}
+RESULT=datos;
+
+:}
+            |Expresion:Ex1 por Expresion:Ex2 {:String datos="";
+if(Ex1!=null && Ex2!=null){
+datos=Ex1+Ex2+"*";
+}
+RESULT=datos;
+
+:}
+            |Expresion:Ex1 div Expresion:Ex2 {:String datos="";
+if(Ex1!=null && Ex2!=null){
+datos=Ex1+Ex2+"/";
+
+}
+RESULT=datos;
+:}
+          
+          |numero:a {: String nuevo=a;
+                        RESULT=nuevo;:}
+          |cadena:a {: String nuevo1=a;
+                        RESULT=nuevo1;:}
+          |chara:a {: String nuevo2=a;
+                        RESULT=nuevo2;:} 
+          |truee:a {:String nuevo3=a;
+                        RESULT=nuevo3;:}
+          |falsee:a {:String nuevo4=a;
+                        RESULT=nuevo4;:};
